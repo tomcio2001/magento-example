@@ -8,33 +8,9 @@
 
 set -e
 
-export SAMPLE_NAME=magento-sample-data-1.6.1.0
 MAGENTO_ADMIN_USERNAME="admin"
 MAGENTO_ADMIN_PASSWORD="OpenShiftAdmin123"
 
-if [ "$OPENSHIFT_APP_DNS" == "$OPENSHIFT_GEAR_DNS" ]
-then
-  if [ ! -f ${OPENSHIFT_DATA_DIR}.magento-sample-installed ]
-  then
-    echo "Extracting sample data"
-    tar xvzf ${OPENSHIFT_REPO_DIR}misc/${SAMPLE_NAME}.tar.gz -C $OPENSHIFT_TMP_DIR 2>&1 >/dev/null
-
-    # Move the media folder into its correct place
-    mv ${OPENSHIFT_REPO_DIR}misc/media $OPENSHIFT_DATA_DIR
-    mv ${OPENSHIFT_TMP_DIR}${SAMPLE_NAME}/media/* ${OPENSHIFT_DATA_DIR}media
-    chmod -R o+w ${OPENSHIFT_DATA_DIR}media
-  fi
-elif [ -d ${OPENSHIFT_REPO_DIR}.openshift/magento/media ]
-then
-  rm -rf ${OPENSHIFT_DATA_DIR}media
-  cp -r ${OPENSHIFT_REPO_DIR}.openshift/magento/media ${OPENSHIFT_DATA_DIR}
-  chmod -R o+w ${OPENSHIFT_DATA_DIR}media
-fi
-
-# If the symlink to the media folder doesn't exist, create it
-if [ ! -L ${OPENSHIFT_DATA_DIR}media ]; then
-  ln -s ${OPENSHIFT_DATA_DIR}media ${OPENSHIFT_REPO_DIR}php/media
-fi
 
 # Check and wait for MySQL
 if [ -z "$OPENSHIFT_MYSQL_DB_HOST" ]
